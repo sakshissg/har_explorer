@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>harexplorer — HAR file explorer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="site-header">
+        <div class="brand">
+          <span class="logo" aria-hidden="true">◇</span>
+          <h1>harexplorer</h1>
+        </div>
+        <p class="tagline">
+          Explore and filter HAR requests. Everything stays in your browser.
+        </p>
+      </header>
+
+      <section id="dropzone" class="dropzone" aria-label="HAR file drop area">
+        <input
+          type="file"
+          id="file-input"
+          accept=".har,application/json,.json"
+          hidden
+        />
+        <div class="dropzone-inner">
+          <p class="drop-title">Drop a <code>.har</code> file here</p>
+          <p class="drop-sub">or <button type="button" id="browse-btn" class="link-btn">click to browse</button></p>
+          <p class="drop-hint">
+            Supports HAR 1.2 / 1.3 from Chrome, Firefox, Safari, or any compliant tool.
+          </p>
+        </div>
+      </section>
+
+      <section id="toolbar" class="toolbar hidden" aria-label="Filters and actions">
+        <div class="toolbar-row">
+          <label class="search-wrap">
+            <span class="sr-only">Filter by URL or method</span>
+            <input
+              type="search"
+              id="filter-input"
+              placeholder="Filter URL, method, status…"
+              autocomplete="off"
+            />
+          </label>
+          <select id="method-filter" aria-label="HTTP method">
+            <option value="">All methods</option>
+          </select>
+          <select id="status-filter" aria-label="Status code">
+            <option value="">All statuses</option>
+            <option value="2">2xx</option>
+            <option value="3">3xx</option>
+            <option value="4">4xx</option>
+            <option value="5">5xx</option>
+          </select>
+          <button type="button" id="export-har" class="btn secondary" disabled>
+            Export selected HAR
+          </button>
+          <button type="button" id="clear-file" class="btn secondary">Open another file</button>
+        </div>
+        <div id="stats" class="stats" aria-live="polite"></div>
+      </section>
+
+      <main id="main" class="main hidden">
+        <div class="split">
+          <div class="panel list-panel">
+            <div class="table-wrap" id="req-table-wrap">
+              <table class="req-table" id="req-table">
+                <colgroup id="req-colgroup">
+                  <col class="col-check" />
+                  <col class="col-idx" />
+                  <col class="col-method" />
+                  <col class="col-url" />
+                  <col class="col-status" />
+                  <col class="col-type" />
+                  <col class="col-size" />
+                  <col class="col-time" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th class="col-check th-resizable" scope="col" title="Select visible rows">
+                      <input type="checkbox" id="select-all-visible" aria-label="Select all visible requests" />
+                      <span
+                        class="col-resize-handle"
+                        data-boundary="0"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize columns after checkbox"
+                      ></span>
+                    </th>
+                    <th class="col-idx th-resizable">
+                      <span class="th-label">#</span>
+                      <span
+                        class="col-resize-handle"
+                        data-boundary="1"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize columns after index"
+                      ></span>
+                    </th>
+                    <th class="col-method th-resizable">
+                      <span class="th-label">Method</span>
+                      <span
+                        class="col-resize-handle"
+                        data-boundary="2"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize columns after method"
+                      ></span>
+                    </th>
+                    <th class="col-url th-resizable">
+                      <span class="th-label">URL</span>
+                      <span
+                        class="col-resize-handle"
+                        data-boundary="3"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize columns after URL"
+                      ></span>
+                    </th>
+                    <th class="col-status th-resizable">
+                      <span class="th-label">Status</span>
+                      <span
+                        class="col-resize-handle"
+                        data-boundary="4"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize columns after status"
+                      ></span>
+                    </th>
+                    <th class="col-type th-resizable">
+                      <span class="th-label">Type</span>
+                      <span
+                        class="col-resize-handle"
+                        data-boundary="5"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize columns after type"
+                      ></span>
+                    </th>
+                    <th class="col-size th-resizable">
+                      <span class="th-label">Size</span>
+                      <span
+                        class="col-resize-handle"
+                        data-boundary="6"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize columns after size"
+                      ></span>
+                    </th>
+                    <th class="col-time">Time</th>
+                  </tr>
+                </thead>
+                <tbody id="req-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel detail-panel" id="detail-panel">
+            <div class="detail-empty" id="detail-empty">
+              Select a request to inspect headers, body, and timings.
+            </div>
+            <div id="detail-content" class="detail-content hidden"></div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <span>No uploads — parsing runs locally via the File API.</span>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast hidden" role="status"></div>
+    <script src="app.js" defer></script>
+  </body>
+</html>
 
